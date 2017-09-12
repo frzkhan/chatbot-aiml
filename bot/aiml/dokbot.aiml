@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+    <category>
+        <pattern>STARTCHAT</pattern>
+        <template>
+            <think><set name="topic">greetings</set></think>
+        </template>
+    </category>
+    <topic name="greetings">
+        <category>
+          <pattern><set>affirmative</set> ^</pattern>
+          <template>
+            Great! <br/> What is your first name?
+            <think><set name="topic">name</set>
+            </think>
+            <system action="initialize" data="userId"  />
+          </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>Ok thanks then!
+            </template>
+        </category>
+    </topic>
+
+  <topic name="name">
+    <category>
+      <pattern>I AM *</pattern>
+      <template>Nice to meet you, <set name="first_name"><star/></set>. What is your last name?<think>
+          <set name="topic">lastname</set>
+          <field name="field">firstName</field>
+          <field name="firstName"><star/></field>
+      </think>
+      <system action="personalInfo" data="userId,field,firstName"  />
+      </template>
+    </category>
+    <category>
+      <pattern>MY NAME IS *</pattern>
+      <template><srai>I AM <star/></srai></template>
+    </category>
+	<category>
+        <pattern>MY FIRST NAME IS *</pattern>
+        <template><srai>I AM <star/></srai></template>
+    </category>
+    <category>
+        <pattern>IT IS *</pattern>
+        <template><srai>I AM <star/></srai></template>
+    </category>
+    <category>
+      <pattern>*</pattern>
+      <template><srai>I AM <star/></srai></template>
+    </category>
+    </topic>
+    <topic name="lastname">
+    <category>
+      <pattern>IT IS *</pattern>
+      <template>Thank you. Are you a male or a female?
+      <think><set name="topic">gender</set>
+            <set name="last_name"><star/></set>
+            <field name="name">lastName</field>
+            <field name="value"><star/></field>
+      </think>
+      <system action="personalInfo" data="userId,name,value"  />
+      </template>
+    </category>
+    <category>
+      <pattern>MY LAST NAME IS *</pattern>
+      <template><srai>IT IS <star/></srai></template>
+    </category>
+    <category>
+      <pattern>*</pattern>
+       <template><srai>IT IS <star/></srai></template>
+    </category>
+    </topic>
+    <topic name="gender">
+        <category>
+            <pattern>MALE</pattern>
+            <template>Sir, for our records please let us know what is your age?
+            <think><set name="gender">male</set></think>
+                <think><set name="topic">age</set>
+                    <field name="name">gender</field>
+                    <field name="value">male</field>
+
+                </think>
+                <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern>FEMALE</pattern>
+            <template>Madam, for our records please let us know what is your age?
+            <think><set name="gender">female</set></think>
+                <think>
+                    <set name="topic">age</set>
+                    <field name="name">gender</field>
+                    <field name="value">female</field>
+                </think>
+                <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+    </topic>
+    <topic name="age">
+        <category>
+            <pattern><set>number</set></pattern>
+            <template>
+            <think><set name="dob"><function name="ageToDob"><star/></function></set></think>
+                <think>
+                    <set name="age"><star/></set>
+                    <field name="name">dob</field>
+                    <field name="value"><function name="ageToDob"><star/></function></field>
+                </think>
+                <condition name="age" expr="g">
+                    <li value="18">That's great. <br/> Now let's build your family pedigree. <br/>How many brothers do you have?<think><set name="topic">brothers</set></think><system action="personalInfo" data="userId,name,value" /></li>
+                    <li>Oops you are too young to be here. Go get your mother. Bye bye</li>
+                </condition>
+
+            </template>
+        </category>
+        <category>
+            <pattern>I AM <set>number</set> YEARS OLD</pattern>
+            <template>
+                <srai><star/></srai>
+            </template>
+        </category>
+    </topic>
+    <topic name="dob">
+        <category>
+            <pattern><set>month</set> <set>number</set> <set>number</set></pattern>
+            <template>Your Date of birth is <map name="month"><star/></map>/<star index="2"/>/<star index="3"/>. Please enter your height in centimeters.
+                <think>
+                    <set name="topic">height</set>
+                    <set name="dob"><star/>/<star index='2'/>/<star index='3'/></set>
+                    <set name="field">dob</set>
+                </think>
+            </template>
+            <system action="personalInfo" data="userId,field,dob"  />
+        </category>
+        <category>
+            <pattern><set>number</set>/<set>number</set>/<set>number</set></pattern>
+            <template>Your Date of birth is <star/>/<star index="2"/>/<star index="3"/>. Please enter your height in centimeters.
+            <think><set name="topic">height</set><set name="dob"><star/>/<star index='2'/>/<star index='3'/></set>
+                <set name="field">dob</set>
+
+            </think>
+            <system action="personalInfo" data="userId,field,dob"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>number</set>-<set>number</set>-<set>number</set></pattern>
+            <template>Your Date of birth is <star/>/<star index="2"/>/<star index="3"/>. Please enter your height in centimeters.
+            <think><set name="topic">height</set><set name="dob"><star/>/<star index='2'/>/<star index='3'/></set>
+                <set name="field">dob</set>
+
+            </think>
+            <system action="personalInfo" data="userId,field,dob"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>month</set> ^ <set>number</set></pattern>
+            <template>Your Date of birth is <map name="month"><star/></map>/<map name="days"><star index="2"/></map>/<star index="3"/>. Please enter your height in centimeters.
+            <think><set name="topic">height</set><set name="dob"><star/>/<star index='2'/>/<star index='3'/></set>
+                <set name="field">dob</set>
+
+            </think>
+            <system action="personalInfo" data="userId,field,dob"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>number</set> ^ <set>number</set> ^ <set>number</set></pattern>
+            <template>Your Date of birth is <star/>/<star index="3"/>/<star index="5"/>. Please enter your height in centimeters.
+            <think><set name="topic">height</set><set name="dob"><star/>/<star index="3"/>/<star index="5"/></set>
+                <set name="field">dob</set>
+
+
+            </think>
+            <system action="personalInfo" data="userId,field,dob"  />
+            </template>
+        </category>
+    </topic>
+	<topic name="height">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your height is <star index="1"/> cm. Thank you. Now please enter your weight in pounds.
+            <think><set name="topic">weight</set> <set name="height"><star/></set>
+                <field name="name">height</field>
+                <field name="value"><star/></field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern>^ <set>number</set> ^</pattern>
+            <template>Your height is <star index="2"/> cm. Thank you. Now please enter your weight in pounds.
+            <think><set name="topic">weight</set> <set name="height"><star index="2"/></set>
+            <field name="name">height</field>
+            <field name="value"><star index="2"/></field>
+
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+    </topic>
+    <topic name="weight">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your weight is <star/> lbs. Do you have a twin?
+            <think>
+                <set name="topic">twin</set>
+                <set name="weight"><star/></set>
+                <field name="name">weight</field>
+                <field name="value"><star/></field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern>^ <set>number</set> ^</pattern>
+            <template>Your weight is <star index="2"/> lbs. Do you have a twin?
+            <think>
+                <set name="topic">twin</set> <set name="weight"><star index="2"/></set>
+                <field name="name">weight</field>
+                <field name="value"><star index="2"/></field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+    </topic>
+    <topic name="twin">
+        <category>
+            <pattern><set>affirmative</set> ^</pattern>
+            <template>Are you identical twins?
+            <think>
+                <set name="topic">identicaltwins</set>
+                <set name="twin">1</set>
+                <field name="name">twin</field>
+                <field name="value">1</field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>Were you adopted?
+            <think>
+                <set name="topic">adopted</set>
+                <set name="twin">0</set>
+			    <set name="view">pedigree</set>
+                <field name="name">twin</field>
+                <field name="value">0</field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+    </topic>
+    <topic name="identicaltwins">
+        <category>
+            <pattern><set>affirmative</set> ^</pattern>
+            <template>Ok. Were you adopted?
+            <think>
+                <set name="topic">adopted</set>
+                <set name="twin">2</set>
+			    <set name="view">pedigree</set>
+                <field name="name">twin</field>
+                <field name="value">2</field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>Ok. Were you adopted?
+            <think>
+                <set name="topic">adopted</set>
+			    <set name="view">pedigree</set>
+            </think>
+            </template>
+        </category>
+    </topic>
+    <topic name="adopted">
+        <category>
+            <pattern><set>affirmative</set> ^</pattern>
+            <template>Ok. Lets build a family pedigree. How many brothers do you have?
+            <think>
+                <set name="topic">brothers</set>
+                <set name="adopted">1</set>
+                <field name="name">adopted</field>
+                <field name="value">1</field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>Ok. Lets build a family pedigree. How many brothers do you have?
+            <think>
+                <set name="topic">brothers</set>
+                <set name="adopted">0</set>
+                <field name="name">adopted</field>
+                <field name="value">0</field>
+            </think>
+            <system action="personalInfo" data="userId,name,value"  />
+            </template>
+        </category>
+    </topic>
+    <topic name="brothers">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>You have <star/> brothers. How many sisters do you have?
+            <think>
+                <set name="numbro"><star/></set>
+                <set name="topic">sisters</set>
+                <field name="relation_name">Brother</field>
+                <field name="total"><star/></field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            </template>
+        </category>
+    </topic>
+    <topic name="sisters">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your have <star/> sisters. How many brothers does your father have?
+            <think><set name="numsis"><star/></set></think>
+            <think>
+                <set name="topic">paternaluncles</set>
+                <field name="relation_name">Sister</field>
+                <field name="total"><star/></field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            </template>
+        </category>
+    </topic>
+    <topic name="paternaluncles">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your father has <star/> brothers. How many sisters does your father have?
+            <think>
+                <set name="numpatunc"><star/></set>
+                <set name="topic">paternalaunts</set>
+                <field name="relation_name">Paternal Uncle</field>
+                <field name="total"><star/></field>
+                <field name="num">1</field>
+                <field name="relation1">Paternal Grandfather</field>
+                <field name="relation2">Paternal Grandmother</field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            <system action="addRelatives" data="userId,num,relation1" />
+            <system action="addRelatives" data="userId,num,relation2" />
+            </template>
+        </category>
+    </topic>
+    <topic name="paternalaunts">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your father has <star/> sisters. How many brothers does your mother have?
+            <think>
+                <set name="numpataunt"><star/></set>
+                <set name="topic">maternaluncles</set>
+                <field name="total"><star/></field>
+                <field name="relation_name">Paternal Aunt</field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            </template>
+        </category>
+    </topic>
+    <topic name="maternaluncles">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your mother has <star/> brothers. How many sisters does your mother have?
+
+            <think>
+                <set name="nummatunc"><star/></set>
+                <set name="topic">maternalaunts</set>
+                <field name="relation_name">Maternal Uncle</field>
+                <field name="total"><star/></field>
+                <field name="num">1</field>
+                <field name="relation1">Maternal Grandfather</field>
+                <field name="relation2">Maternal Grandmother</field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            <system action="addRelatives" data="userId,num,relation1" />
+            <system action="addRelatives" data="userId,num,relation2" />
+            </template>
+        </category>
+    </topic>
+    <topic name="maternalaunts">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Your mother has <star/> sisters. Ok. Now let's find out about your disease history. Have you ever been diagnosed with a disease or a condition?
+            <think>
+                <set name="topic">disease</set>
+                <set name="nummataunt"><star/></set>
+                <field name="relation_name">Maternal Aunt</field>
+                <field name="total"><star/></field>
+            </think>
+            <system action="addRelatives" data="userId,total,relation_name" />
+            </template>
+        </category>
+    </topic>
+    <topic name="disease">
+        <category>
+            <pattern><set>affirmative</set> ^</pattern>
+            <template>Please select the disease with which you were diagnosed? In case of multiple conditions please select one disease at a time.
+            <think>
+                <set name="topic">diseasename</set>
+                <set name="model">disease</set>
+            </think>
+
+            </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>That's great. Thanks! Let me know if you need any help using our system :)</template>
+        </category>
+    </topic>
+    <topic name="diseasename">
+        <category>
+            <pattern>*</pattern>
+            <template>At what age was the diagnosis made?
+            <think><set name="topic">diagnosisage</set>
+                    <field name="diseasename"><star/></field>
+                    <field name="field">diseasename</field>
+                    <field name="id">null</field>
+            </think>
+            <system action="setClinicalObservation" data="userId,id,field,diseasename" />
+            </template>
+        </category>
+    </topic>
+    <topic name="diagnosisage">
+        <category>
+            <pattern><set>number</set></pattern>
+            <template>Has it been resolved?
+            <think><set name="topic">resolved</set>
+                <field name="diagnosisage"><star/></field>
+                <field name="field">agelow</field>
+            </think>
+            <system action="setClinicalObservation" data="userId,vars,field,diagnosisage" />
+            </template>
+        </category>
+        <category>
+            <pattern>*</pattern>
+            <template>You need to enter age in number format
+            <think><set name="topic">diagnosisage</set>
+            </think>
+            </template>
+        </category>
+    </topic>
+    <topic name="resolved">
+        <category>
+            <pattern><set>affirmative</set> ^</pattern>
+            <template>Thank GOD! At what age was it resolved?
+            <think><set name="topic">resolveAge</set>
+                <field name="value">1</field>
+                <field name="field">isresolved</field>
+            </think>
+            <system action="setClinicalObservation" data="userId,vars,field,value" />
+            </template>
+        </category>
+        <category>
+            <pattern><set>negative</set> ^</pattern>
+            <template>Were you diagnosed with any other disease?
+            <think>
+                <set name="topic">disease</set>
+                <field name="value">0</field>
+                <field name="field">isresolved</field>
+            </think>
+            <system action="setClinicalObservation" data="userId,vars,field,value" />
+            </template>
+        </category>
+    </topic>
+    <topic name="resolveAge">
+        <category>
+            <pattern><set>number</set> ^</pattern>
+            <template>Were you diagnosed with any other disease?
+                <think>
+                    <set name="topic">disease</set>
+                    <field name="age"><star/></field>
+                    <field name="field">agehigh</field>
+                </think>
+                <system action="setClinicalObservation" data="userId,vars,field,age" />
+            </template>
+        </category>
+        <category>
+            <pattern>*</pattern>
+            <template>You need to enter age in number format
+                <think><set name="topic">resolveAge</set>
+                </think>
+            </template>
+        </category>
+    </topic>
+
+</aiml>
